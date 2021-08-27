@@ -20,7 +20,9 @@ class FlutterBackgroundService {
 
   static FlutterBackgroundService _instance =
       FlutterBackgroundService._internal().._setupBackground();
+
   FlutterBackgroundService._internal();
+
   factory FlutterBackgroundService() => _instance;
 
   void _setupMain() {
@@ -42,7 +44,6 @@ class FlutterBackgroundService {
         break;
       default:
     }
-
     return true;
   }
 
@@ -51,14 +52,12 @@ class FlutterBackgroundService {
     bool foreground = true,
     bool autoStart = true,
   }) async {
-    final CallbackHandle handle = PluginUtilities.getCallbackHandle(onStart);
+    final CallbackHandle? handle = PluginUtilities.getCallbackHandle(onStart);
     if (handle == null) {
       return false;
     }
-
     final service = FlutterBackgroundService();
     service._setupMain();
-
     final r = await _mainChannel.invokeMethod(
       "BackgroundService.start",
       {
@@ -77,6 +76,7 @@ class FlutterBackgroundService {
       dispose();
       return;
     }
+
     if (_isFromInitialization) {
       _mainChannel.invokeMethod("sendData", data);
       return;
@@ -87,7 +87,7 @@ class FlutterBackgroundService {
 
   // Set Foreground Notification Information
   // Only available when foreground mode is true
-  void setNotificationInfo({String title, String content}) {
+  void setNotificationInfo({required String title, required String content}) {
     if (Platform.isAndroid)
       _backgroundChannel.invokeMethod("setNotificationInfo", {
         "title": title,
@@ -115,9 +115,7 @@ class FlutterBackgroundService {
 
   // StopBackgroundService from Running
   void stopBackgroundService() {
-    //TODO: Remove this check once implemented for IOS.
-    if (Platform.isAndroid) _backgroundChannel.invokeMethod("stopService");
-    _isRunning = false;
+    _backgroundChannel.invokeMethod("stopService");
   }
 
   void setAutoStartOnBootMode(bool value) {

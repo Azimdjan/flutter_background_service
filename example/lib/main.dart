@@ -13,7 +13,7 @@ void onStart() {
   WidgetsFlutterBinding.ensureInitialized();
   final service = FlutterBackgroundService();
   service.onDataReceived.listen((event) {
-    if (event!["action"] == "setAsForeground") {
+    if (event["action"] == "setAsForeground") {
       service.setForegroundMode(true);
       return;
     }
@@ -23,8 +23,6 @@ void onStart() {
     if (event["action"] == "stopService") {
       service.stopBackgroundService();
     }
-
-
   });
 
   // bring to foreground
@@ -36,7 +34,7 @@ void onStart() {
       content: "Updated at ${DateTime.now()}",
     );
     service.sendData(
-      {"current_date": DateTime.now().toIso8601String()},
+      {"current_date": timer.tick},
     );
   });
 }
@@ -54,7 +52,7 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: const Text('Service App'),
+          title: Text('Service App'),
         ),
         body: Column(
           children: [
@@ -67,8 +65,7 @@ class _MyAppState extends State<MyApp> {
                   );
                 }
                 final data = snapshot.data!;
-                DateTime? date = DateTime.tryParse(data["current_date"]);
-                return Text(date.toString());
+                return Text(data['current_date'].toString());
               },
             ),
             ElevatedButton(

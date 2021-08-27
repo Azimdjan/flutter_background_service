@@ -9,9 +9,11 @@ public class SwiftFlutterBackgroundServicePlugin: FlutterPluginAppLifeCycleDeleg
     var backgroundEngine: FlutterEngine? = nil
     var mainChannel: FlutterMethodChannel? = nil
     var backgroundChannel: FlutterMethodChannel? = nil
+    var handle : NSNumber? = nil
+    
     
     public override func application(_ application: UIApplication, performFetchWithCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) -> Bool {
-        
+    
         self.beginFetch()
         completionHandler(.newData)
         return true
@@ -43,6 +45,7 @@ public class SwiftFlutterBackgroundServicePlugin: FlutterPluginAppLifeCycleDeleg
         if (call.method == "BackgroundService.start"){
             let args = call.arguments as? Dictionary<String, Any>
             let callbackHandleID = args?["handle"] as? NSNumber
+            handle = callbackHandleID
             let defaults = UserDefaults.standard
             defaults.set(callbackHandleID?.int64Value, forKey: "callback_handle")
             self.beginFetch()
@@ -66,9 +69,12 @@ public class SwiftFlutterBackgroundServicePlugin: FlutterPluginAppLifeCycleDeleg
     }
     
     public func beginFetch(){
+        print("--------->>>>>1")
         if (self.backgroundEngine != nil){
             return
         }
+        
+        print("--------->>>>>2")
         
         let defaults = UserDefaults.standard
         if let callbackHandleID = defaults.object(forKey: "callback_handle") as? Int64 {
@@ -102,6 +108,14 @@ public class SwiftFlutterBackgroundServicePlugin: FlutterPluginAppLifeCycleDeleg
                 if (call.method == "setNotificationInfo"){
                     result(true);
                     return;
+                }
+            
+                if(call.method == "stopService"){
+                    let defaults = UserDefaults.standard
+                    print("stopService swift==================>>>>>>>")
+                    defaults.removeObject(forKey: "callback_handle")
+                    self.backgroundChannel = nil
+                    self.backgroundEngine = nil
                 }
             })
         }
