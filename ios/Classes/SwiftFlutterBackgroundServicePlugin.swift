@@ -43,10 +43,8 @@ public class SwiftFlutterBackgroundServicePlugin: FlutterPluginAppLifeCycleDeleg
         if (call.method == "BackgroundService.start"){
             let args = call.arguments as? Dictionary<String, Any>
             let callbackHandleID = args?["handle"] as? NSNumber
-            
             let defaults = UserDefaults.standard
             defaults.set(callbackHandleID?.int64Value, forKey: "callback_handle")
-            
             self.beginFetch()
             result(true)
             return
@@ -92,7 +90,6 @@ public class SwiftFlutterBackgroundServicePlugin: FlutterPluginAppLifeCycleDeleg
                     if (self.mainChannel != nil){
                         self.mainChannel?.invokeMethod("onReceiveData", arguments: call.arguments)
                     }
-                    
                     result(true);
                     return;
                 }

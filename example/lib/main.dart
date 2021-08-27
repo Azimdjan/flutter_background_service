@@ -6,7 +6,6 @@ import 'package:flutter_background_service/flutter_background_service.dart';
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   FlutterBackgroundService.initialize(onStart);
-
   runApp(MyApp());
 }
 
@@ -18,14 +17,14 @@ void onStart() {
       service.setForegroundMode(true);
       return;
     }
-
     if (event["action"] == "setAsBackground") {
       service.setForegroundMode(false);
     }
-
     if (event["action"] == "stopService") {
       service.stopBackgroundService();
     }
+
+
   });
 
   // bring to foreground
@@ -36,7 +35,6 @@ void onStart() {
       title: "My App Service",
       content: "Updated at ${DateTime.now()}",
     );
-
     service.sendData(
       {"current_date": DateTime.now().toIso8601String()},
     );
@@ -50,6 +48,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   String text = "Stop Service";
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -67,7 +66,6 @@ class _MyAppState extends State<MyApp> {
                     child: CircularProgressIndicator(),
                   );
                 }
-
                 final data = snapshot.data!;
                 DateTime? date = DateTime.tryParse(data["current_date"]);
                 return Text(date.toString());
@@ -111,9 +109,8 @@ class _MyAppState extends State<MyApp> {
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
-            FlutterBackgroundService().sendData({
-              "hello": "world",
-            });
+            FlutterBackgroundService()
+                .sendData({"image_upload": true, "path": "dvsdvs"});
           },
           child: Icon(Icons.play_arrow),
         ),
