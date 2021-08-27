@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 
@@ -56,7 +55,7 @@ class _MyAppState extends State<MyApp> {
         ),
         body: Column(
           children: [
-            StreamBuilder<Map<String, dynamic>?>(
+            StreamBuilder<Map<String, dynamic>>(
               stream: FlutterBackgroundService().onDataReceived,
               builder: (context, snapshot) {
                 if (!snapshot.hasData) {
@@ -64,7 +63,7 @@ class _MyAppState extends State<MyApp> {
                     child: CircularProgressIndicator(),
                   );
                 }
-                final data = snapshot.data!;
+                final data = snapshot.data;
                 return Text(data['current_date'].toString());
               },
             ),

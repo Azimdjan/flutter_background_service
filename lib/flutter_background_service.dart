@@ -52,7 +52,7 @@ class FlutterBackgroundService {
     bool foreground = true,
     bool autoStart = true,
   }) async {
-    final CallbackHandle? handle = PluginUtilities.getCallbackHandle(onStart);
+    final CallbackHandle handle = PluginUtilities.getCallbackHandle(onStart);
     if (handle == null) {
       return false;
     }
@@ -87,11 +87,11 @@ class FlutterBackgroundService {
 
   // Set Foreground Notification Information
   // Only available when foreground mode is true
-  void setNotificationInfo({required String title, required String content}) {
+  void setNotificationInfo({String title, String content}) {
     if (Platform.isAndroid)
       _backgroundChannel.invokeMethod("setNotificationInfo", {
-        "title": title,
-        "content": content,
+        "title": title ?? 'title',
+        "content": content ?? 'content',
       });
   }
 
