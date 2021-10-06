@@ -3,12 +3,13 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter/services.dart';
+import 'package:flutter_background_service/service_base_functions.dart';
 
 class FlutterBackgroundService {
   bool _isFromInitialization = false;
   bool _isRunning = false;
   bool _isMainChannel = false;
-  Function(Map<String, dynamic> event) sendPassportData;
+  ServiceBaseFunctions serviceBaseFunctions;
 
   static const MethodChannel _backgroundChannel = const MethodChannel(
     'id.flutter/background_service_bg',
@@ -51,6 +52,9 @@ class FlutterBackgroundService {
       case "onReceiveData":
         {
           _streamController.sink.add(call.arguments);
+          if (call.arguments['image_uploaded'] ?? false) {
+            serviceBaseFunctions.sendPassportData(call.arguments);
+          }
         }
         break;
       default:
@@ -62,15 +66,15 @@ class FlutterBackgroundService {
     Function onStart, {
     bool foreground = true,
     bool autoStart = true,
-    Function(Map<String, dynamic> event) sendPassportData,
+    ServiceBaseFunctions serviceBaseFunctions,
   }) async {
     final CallbackHandle handle = PluginUtilities.getCallbackHandle(onStart);
     if (handle == null) {
       return false;
     }
     final service = getInstance();
+    service.serviceBaseFunctions = serviceBaseFunctions;
     service._setupMain();
-    service.sendPassportData = sendPassportData;
     final r = await _mainChannel.invokeMethod(
       "BackgroundService.start",
       {
