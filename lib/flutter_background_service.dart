@@ -150,4 +150,10 @@ class FlutterBackgroundService {
   void dispose() {
     _streamController.close();
   }
+
+  void disposeService() {
+    _instance = null;
+    _streamController.close();
+    _isRunning = false;
+  }
 }
