@@ -69,13 +69,10 @@ public class SwiftFlutterBackgroundServicePlugin: FlutterPluginAppLifeCycleDeleg
     }
     
     public func beginFetch(){
-        print("--------->>>>>1")
         if (self.backgroundEngine != nil){
             return
         }
-        
-        print("--------->>>>>2")
-        
+                
         let defaults = UserDefaults.standard
         if let callbackHandleID = defaults.object(forKey: "callback_handle") as? Int64 {
             let callbackHandle = FlutterCallbackCache.lookupCallbackInformation(callbackHandleID)

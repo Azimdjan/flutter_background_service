@@ -8,6 +8,8 @@ class FlutterBackgroundService {
   bool _isFromInitialization = false;
   bool _isRunning = false;
   bool _isMainChannel = false;
+  Function(Map<String, dynamic> event) sendPassportData;
+
   static const MethodChannel _backgroundChannel = const MethodChannel(
     'id.flutter/background_service_bg',
     JSONMethodCodec(),
@@ -23,7 +25,10 @@ class FlutterBackgroundService {
 
   FlutterBackgroundService._internal();
 
-  factory FlutterBackgroundService() => _instance;
+  factory FlutterBackgroundService({Map<String, dynamic> event}) {
+
+    return _instance;
+  }
 
   void _setupMain() {
     _isFromInitialization = true;
@@ -40,7 +45,13 @@ class FlutterBackgroundService {
   Future<dynamic> _handle(MethodCall call) async {
     switch (call.method) {
       case "onReceiveData":
-        _streamController.sink.add(call.arguments);
+        {
+          _streamController.sink.add(call.arguments);
+          if ((call.arguments['image_uploaded'] ?? false) &&
+              sendPassportData != null) {
+            sendPassportData(call.arguments);
+          }
+        }
         break;
       default:
     }
@@ -51,6 +62,7 @@ class FlutterBackgroundService {
     Function onStart, {
     bool foreground = true,
     bool autoStart = true,
+    Function(Map<String, dynamic> event) sendPassportData,
   }) async {
     final CallbackHandle handle = PluginUtilities.getCallbackHandle(onStart);
     if (handle == null) {
@@ -58,6 +70,7 @@ class FlutterBackgroundService {
     }
     final service = FlutterBackgroundService();
     service._setupMain();
+    service.sendPassportData = sendPassportData;
     final r = await _mainChannel.invokeMethod(
       "BackgroundService.start",
       {
