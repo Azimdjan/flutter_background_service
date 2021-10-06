@@ -10,7 +10,7 @@ void main() {
 
 void onStart() {
   WidgetsFlutterBinding.ensureInitialized();
-  final service = FlutterBackgroundService();
+  final service = FlutterBackgroundService.getInstance();
   service.onDataReceived.listen((event) {
     if (event["action"] == "setAsForeground") {
       service.setForegroundMode(true);
@@ -56,7 +56,7 @@ class _MyAppState extends State<MyApp> {
         body: Column(
           children: [
             StreamBuilder<Map<String, dynamic>>(
-              stream: FlutterBackgroundService().onDataReceived,
+              stream: FlutterBackgroundService.getInstance().onDataReceived,
               builder: (context, snapshot) {
                 if (!snapshot.hasData) {
                   return Center(
@@ -70,24 +70,31 @@ class _MyAppState extends State<MyApp> {
             ElevatedButton(
               child: Text("Foreground Mode"),
               onPressed: () {
-                FlutterBackgroundService()
+                FlutterBackgroundService.getInstance()
                     .sendData({"action": "setAsForeground"});
               },
             ),
             ElevatedButton(
               child: Text("Background Mode"),
               onPressed: () {
-                FlutterBackgroundService()
+                FlutterBackgroundService.getInstance()
+                    .sendData({"action": "setAsBackground"});
+              },
+            ),
+            ElevatedButton(
+              child: Text("Background Mode"),
+              onPressed: () {
+                FlutterBackgroundService.getInstance()
                     .sendData({"action": "setAsBackground"});
               },
             ),
             ElevatedButton(
               child: Text(text),
               onPressed: () async {
-                var isRunning =
-                    await FlutterBackgroundService().isServiceRunning();
+                var isRunning = await FlutterBackgroundService.getInstance()
+                    .isServiceRunning();
                 if (isRunning) {
-                  FlutterBackgroundService().sendData(
+                  FlutterBackgroundService.getInstance().sendData(
                     {"action": "stopService"},
                   );
                 } else {
@@ -105,7 +112,7 @@ class _MyAppState extends State<MyApp> {
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
-            FlutterBackgroundService()
+            FlutterBackgroundService.getInstance()
                 .sendData({"image_upload": true, "path": "dvsdvs"});
           },
           child: Icon(Icons.play_arrow),

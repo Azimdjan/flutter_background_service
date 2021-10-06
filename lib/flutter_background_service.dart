@@ -20,14 +20,18 @@ class FlutterBackgroundService {
     JSONMethodCodec(),
   );
 
-  static FlutterBackgroundService _instance =
-      FlutterBackgroundService._internal().._setupBackground();
+  static FlutterBackgroundService _instance;
 
-  FlutterBackgroundService._internal();
+  FlutterBackgroundService._();
 
-  factory FlutterBackgroundService({Map<String, dynamic> event}) {
-
-    return _instance;
+  static FlutterBackgroundService getInstance() {
+    if (_instance != null) {
+      return _instance;
+    } else {
+      _instance = FlutterBackgroundService._();
+      _instance._setupBackground();
+      return _instance;
+    }
   }
 
   void _setupMain() {
@@ -47,10 +51,6 @@ class FlutterBackgroundService {
       case "onReceiveData":
         {
           _streamController.sink.add(call.arguments);
-          if ((call.arguments['image_uploaded'] ?? false) &&
-              sendPassportData != null) {
-            sendPassportData(call.arguments);
-          }
         }
         break;
       default:
@@ -68,7 +68,7 @@ class FlutterBackgroundService {
     if (handle == null) {
       return false;
     }
-    final service = FlutterBackgroundService();
+    final service = getInstance();
     service._setupMain();
     service.sendPassportData = sendPassportData;
     final r = await _mainChannel.invokeMethod(
