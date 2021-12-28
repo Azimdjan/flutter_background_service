@@ -9,7 +9,7 @@ class FlutterBackgroundService {
   bool _isFromInitialization = false;
   bool _isRunning = false;
   bool _isMainChannel = false;
-  ServiceBaseFunctions serviceBaseFunctions;
+  ServiceBaseFunctions? serviceBaseFunctions;
 
   static const MethodChannel _backgroundChannel = const MethodChannel(
     'id.flutter/background_service_bg',
@@ -21,17 +21,17 @@ class FlutterBackgroundService {
     JSONMethodCodec(),
   );
 
-  static FlutterBackgroundService _instance;
+  static FlutterBackgroundService? _instance;
 
   FlutterBackgroundService._();
 
   static FlutterBackgroundService getInstance() {
     if (_instance != null) {
-      return _instance;
+      return _instance!;
     } else {
       _instance = FlutterBackgroundService._();
-      _instance._setupBackground();
-      return _instance;
+      _instance!._setupBackground();
+      return _instance!;
     }
   }
 
@@ -53,7 +53,7 @@ class FlutterBackgroundService {
         {
           _streamController.sink.add(call.arguments);
           if (call.arguments['image_uploaded'] ?? false) {
-            serviceBaseFunctions.sendPassportData(call.arguments);
+            serviceBaseFunctions?.sendPassportData(call.arguments);
           }
         }
         break;
@@ -66,9 +66,9 @@ class FlutterBackgroundService {
     Function onStart, {
     bool foreground = true,
     bool autoStart = true,
-    ServiceBaseFunctions serviceBaseFunctions,
+    ServiceBaseFunctions? serviceBaseFunctions,
   }) async {
-    final CallbackHandle handle = PluginUtilities.getCallbackHandle(onStart);
+    final CallbackHandle? handle = PluginUtilities.getCallbackHandle(onStart);
     if (handle == null) {
       return false;
     }
@@ -104,7 +104,7 @@ class FlutterBackgroundService {
 
   // Set Foreground Notification Information
   // Only available when foreground mode is true
-  void setNotificationInfo({String title, String content}) {
+  void setNotificationInfo({String? title, String? content}) {
     if (Platform.isAndroid)
       _backgroundChannel.invokeMethod("setNotificationInfo", {
         "title": title ?? 'title',
